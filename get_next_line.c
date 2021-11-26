@@ -6,7 +6,7 @@
 /*   By: jmaia <jmaia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 12:01:52 by jmaia             #+#    #+#             */
-/*   Updated: 2021/11/26 11:29:51 by jmaia            ###   ########.fr       */
+/*   Updated: 2021/11/26 11:44:59 by jmaia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,13 @@ static size_t	ft_strlen(char *s)
 	return (count);
 }
 
-static char	*ft_strdup(char *s)
+static char	*ft_strdup_or_null_if_empty(char *s)
 {
 	char	*dup;
 	size_t	len_s;
 
+	if (*s == 0)
+		return (0);
 	len_s = ft_strlen(s);
 	dup = malloc(sizeof(*dup) * (len_s + 1));
 	if (dup == 0)
@@ -86,7 +88,7 @@ char	*get_next_line(int fd)
 			return (0);
 		}
 	}
-	backpack.return_line = ft_strdup(backpack.line->string);
+	backpack.return_line = ft_strdup_or_null_if_empty(backpack.line->string);
 	free_infinite_string(backpack.line);
 	return (backpack.return_line);
 }
