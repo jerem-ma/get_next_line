@@ -6,7 +6,7 @@
 /*   By: jmaia <jmaia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 12:54:08 by jmaia             #+#    #+#             */
-/*   Updated: 2021/11/26 10:48:56 by jmaia            ###   ########.fr       */
+/*   Updated: 2021/11/26 11:54:51 by jmaia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ enum e_error	append_char(t_infinite_string *str, char c)
 	char	*extended_str;
 	size_t	new_size;
 
-	if (str->i == str->size)
+	if (str->i + 1 >= str->size)
 	{
 		new_size = str->size + DEFAULT_INF_STR_SIZE;
 		extended_str = malloc(sizeof(*extended_str) * new_size);
@@ -105,5 +105,6 @@ enum e_error	append_char(t_infinite_string *str, char c)
 		return (append_char(str, c));
 	}
 	str->string[str->i++] = c;
+	str->string[str->i] = 0;
 	return (e_ok);
 }
