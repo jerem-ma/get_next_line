@@ -6,7 +6,7 @@
 /*   By: jmaia <jmaia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 12:54:08 by jmaia             #+#    #+#             */
-/*   Updated: 2021/11/25 14:54:23 by jmaia            ###   ########.fr       */
+/*   Updated: 2021/11/26 10:48:56 by jmaia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,23 +22,34 @@ t_file	*get_file(int fd)
 	file->fd = fd;
 	file->i = BUFFER_SIZE;
 	file->real_size = BUFFER_SIZE;
+	file->is_end = 0;
 	return (file);
 }
 
-char	get_next_char(t_file	*file)
+t_char_file	*get_next_char(t_file	*file)
 {
-	if (file->i == -1)
+	t_char_file	*c_file;
+
+	c_file = malloc(sizeof(*c_file));
+	if (!c_file)
 		return (0);
+	if (file->is_end)
+	{
+		c_file->is_end = 1;
+		return (c_file);
+	}
 	if (file->i == file->real_size)
 	{
 		file->real_size = read(file->fd, file->buffer, BUFFER_SIZE);
 		if (file->real_size == 0 || file->real_size == -1)
-			file->i = -1;
+			file->is_end = 1;
 		else
 			file->i = 0;
 		return (get_next_char(file));
 	}
-	return (file->buffer[file->i++]);
+	c_file->is_end = 0;
+	c_file->c = file->buffer[file->i++];
+	return (c_file);
 }
 
 t_infinite_string	*init_infinite_string(void)
