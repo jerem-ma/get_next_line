@@ -1,94 +1,110 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jmaia <jmaia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 12:01:52 by jmaia             #+#    #+#             */
-/*   Updated: 2021/11/26 11:52:31 by jmaia            ###   ########.fr       */
+/*   Updated: 2021/11/30 10:54:30 by jmaia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
-
-static size_t	ft_strlen(char *s)
-{
-	size_t	count;
-
-	count = 0;
-	while (*s++)
-		count++;
-	return (count);
-}
+#include "get_next_line_bonus.h"
 
 static char	*ft_strdup_or_null_if_empty(char *s)
 {
-	char	*dup;
-	size_t	len_s;
+	char			*dup;
+	unsigned int	i;
+	size_t			len_s;
 
 	if (*s == 0)
 		return (0);
-	len_s = ft_strlen(s);
+	len_s = 0;
+	i = 0;
+	while (s[i++])
+		len_s++;
 	dup = malloc(sizeof(*dup) * (len_s + 1));
 	if (dup == 0)
 		return (0);
-	ft_memcpy(dup, s, sizeof(*dup) * (len_s + 1));
+	i = 0;
+	while (i < sizeof(*dup) * (len_s + 1))
+	{
+		dup[i] = s[i];
+		i++;
+	}
 	return (dup);
 }
 
-static void	free_infinite_string(t_infinite_string *str)
+static t_file	init_file(int fd)
 {
-	free(str->string);
-	free(str);
+	t_file	file;
+
+	file.fd = fd;
+	file.i = BUFFER_SIZE;
+	file.real_size = BUFFER_SIZE;
+	file.is_end = 0;
+	return (file);
 }
 
-static t_backpack	get_backpack(void)
+t_file	*get_file(t_infinite_tab *files, int fd)
 {
-	t_backpack	backpack;
+	unsigned int	i;
+	t_file			file;
 
-	backpack.is_bad_backpack = 0;
-	backpack.c = malloc(sizeof(*backpack.c));
-	if (!backpack.c)
+	if (files->tab == 0)
 	{
-		backpack.is_bad_backpack = 1;
-		return (backpack);
+		files->i = 0;
+		files->size = 0;
+		files->elem_size = sizeof(t_file);
+		files->tab = malloc(sizeof(*files->tab) * files->elem_size);
+		if (files->tab == 0)
+			return (0);
+		((t_file *) &files->tab[0])->fd = -2;
 	}
-	backpack.line = init_infinite_string();
-	if (!backpack.line)
+	i = 0;
+	while (((t_file *) &files->tab[i * files->elem_size])->fd != -2)
 	{
-		backpack.is_bad_backpack = 1;
-		free(backpack.c);
-		return (backpack);
+		if (((t_file *) &files->tab[i * files->elem_size])->fd == fd)
+			return ((t_file *) &files->tab[i * files->elem_size]);
+		i++;
 	}
-	backpack.c->c = 0;
-	backpack.c->is_end = 0;
-	return (backpack);
+	file = init_file(fd);
+	append_elem(files, &file);
+	((t_file *)(&files->tab[files->i * files->elem_size]))->fd = -2;
+	return ((t_file *) &files->tab[i * files->elem_size]);
+}
+
+static void	free_infinite_tab(t_infinite_tab *tab)
+{
+	free(tab->tab);
+	free(tab);
 }
 
 char	*get_next_line(int fd)
 {
-	static t_file	file = {.i = BUFFER_SIZE, .real_size = BUFFER_SIZE,
-		.is_end = 0};
-	t_backpack		backpack;
+	static t_infinite_tab	files = {.tab = 0};
+	t_backpack				backpack;
 
-	backpack = get_backpack();
+	backpack = get_backpack(&files, fd);
 	if (backpack.is_bad_backpack)
 		return (0);
-	file.fd = fd;
-	while (backpack.c->c != '\n' && !backpack.c->is_end)
+	while (!backpack.c->is_end && backpack.c->c != '\n')
 	{
-		backpack.c = get_next_char(&file);
+		free(backpack.c);
+		backpack.c = get_next_char(backpack.file);
 		if (backpack.c->is_end)
 			continue ;
-		backpack.err = append_char(backpack.line, backpack.c->c);
+		backpack.err = append_elem(backpack.line, &backpack.c->c);
 		if (backpack.err == e_err)
 		{
-			free_infinite_string(backpack.line);
+			free(backpack.c);
+			free_infinite_tab(backpack.line);
 			return (0);
 		}
 	}
-	backpack.return_line = ft_strdup_or_null_if_empty(backpack.line->string);
-	free_infinite_string(backpack.line);
+	free(backpack.c);
+	backpack.return_line = ft_strdup_or_null_if_empty(backpack.line->tab);
+	free_infinite_tab(backpack.line);
 	return (backpack.return_line);
 }

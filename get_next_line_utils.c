@@ -1,30 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jmaia <jmaia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 12:54:08 by jmaia             #+#    #+#             */
-/*   Updated: 2021/11/26 11:54:51 by jmaia            ###   ########.fr       */
+/*   Updated: 2021/11/30 10:54:52 by jmaia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
-
-t_file	*get_file(int fd)
-{
-	t_file	*file;
-
-	file = malloc(sizeof(*file));
-	if (file == 0)
-		return (0);
-	file->fd = fd;
-	file->i = BUFFER_SIZE;
-	file->real_size = BUFFER_SIZE;
-	file->is_end = 0;
-	return (file);
-}
+#include "get_next_line_bonus.h"
 
 t_char_file	*get_next_char(t_file	*file)
 {
@@ -45,6 +31,7 @@ t_char_file	*get_next_char(t_file	*file)
 			file->is_end = 1;
 		else
 			file->i = 0;
+		free(c_file);
 		return (get_next_char(file));
 	}
 	c_file->is_end = 0;
@@ -52,59 +39,95 @@ t_char_file	*get_next_char(t_file	*file)
 	return (c_file);
 }
 
-t_infinite_string	*init_infinite_string(void)
+t_infinite_tab	*init_infinite_tab(unsigned int elem_size)
 {
-	t_infinite_string	*str;
+	t_infinite_tab	*tab;
 
-	str = malloc(sizeof(*str));
-	if (str == 0)
+	tab = malloc(sizeof(*tab));
+	if (tab == 0)
 		return (0);
-	str->string = malloc(sizeof(*str->string) * DEFAULT_INF_STR_SIZE);
-	if (str->string == 0)
+	tab->tab = malloc(elem_size * DEFAULT_INF_STR_SIZE);
+	if (tab->tab == 0)
 	{
-		free(str);
+		free(tab);
 		return (0);
 	}
-	str->i = 0;
-	str->size = DEFAULT_INF_STR_SIZE;
-	return (str);
+	tab->i = 0;
+	tab->size = DEFAULT_INF_STR_SIZE;
+	tab->elem_size = elem_size;
+	return (tab);
 }
 
-void	*ft_memcpy(void *dest, const void *src, size_t n)
+enum e_error	extend_infinite_tab(t_infinite_tab *tab)
 {
-	size_t		i;
-	char		*dest_cur;
-	const char	*src_cur;
+	unsigned int	new_size;
+	char			*extended_tab;
+	size_t			i;
 
-	dest_cur = dest;
-	src_cur = src;
+	new_size = tab->size + DEFAULT_INF_STR_SIZE;
+	extended_tab = malloc(tab->elem_size * new_size);
+	if (extended_tab == 0)
+		return (e_err);
 	i = 0;
-	while (i < n)
+	while (i < tab->elem_size * tab->size)
 	{
-		dest_cur[i] = src_cur[i];
+		extended_tab[i] = tab->tab[i];
 		i++;
 	}
-	return (dest);
+	tab->size = new_size;
+	free(tab->tab);
+	tab->tab = extended_tab;
+	return (e_ok);
 }
 
-enum e_error	append_char(t_infinite_string *str, char c)
+enum e_error	append_elem(t_infinite_tab *tab, void *elem)
 {
-	char	*extended_str;
-	size_t	new_size;
+	unsigned int	i;
+	char			*bytes;
+	enum e_error	err;
 
-	if (str->i + 1 >= str->size)
+	if (tab->i + 1 >= tab->size)
 	{
-		new_size = str->size + DEFAULT_INF_STR_SIZE;
-		extended_str = malloc(sizeof(*extended_str) * new_size);
-		if (extended_str == 0)
+		err = extend_infinite_tab(tab);
+		if (err == e_err)
 			return (e_err);
-		ft_memcpy(extended_str, str->string, str->size);
-		str->size += DEFAULT_INF_STR_SIZE;
-		free(str->string);
-		str->string = extended_str;
-		return (append_char(str, c));
+		return (append_elem(tab, elem));
 	}
-	str->string[str->i++] = c;
-	str->string[str->i] = 0;
+	i = 0;
+	bytes = (char *) elem;
+	while (i < tab->elem_size)
+	{
+		tab->tab[tab->i * tab->elem_size + i] = bytes[i];
+		tab->tab[(tab->i + 1) * tab->elem_size + i] = 0;
+		i++;
+	}
+	tab->i++;
 	return (e_ok);
+}
+
+t_backpack	get_backpack(t_infinite_tab *files, int fd)
+{
+	t_backpack	backpack;
+
+	backpack.is_bad_backpack = 1;
+	backpack.c = malloc(sizeof(*backpack.c));
+	if (!backpack.c)
+		return (backpack);
+	backpack.line = init_infinite_tab(sizeof(char));
+	if (!backpack.line)
+	{
+		free(backpack.c);
+		return (backpack);
+	}
+	backpack.line->tab[0] = 0;
+	backpack.c->c = 0;
+	backpack.c->is_end = 0;
+	backpack.file = get_file(files, fd);
+	if (!backpack.file)
+	{
+		free(backpack.c);
+		free(backpack.line);
+	}
+	backpack.is_bad_backpack = 0;
+	return (backpack);
 }

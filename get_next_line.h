@@ -6,7 +6,7 @@
 /*   By: jmaia <jmaia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 11:57:54 by jmaia             #+#    #+#             */
-/*   Updated: 2021/11/26 11:30:11 by jmaia            ###   ########.fr       */
+/*   Updated: 2021/11/30 11:01:54 by jmaia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,13 @@ typedef struct s_file
 	int				is_end;
 }	t_file;
 
-typedef struct s_infinite_string
+typedef struct s_infinite_tab
 {
-	char			*string;
+	char			*tab;
 	unsigned int	i;
 	unsigned int	size;
-}	t_infinite_string;
+	unsigned int	elem_size;
+}	t_infinite_tab;
 
 typedef struct s_char_file
 {
@@ -42,18 +43,21 @@ typedef struct s_char_file
 
 typedef struct s_backpack
 {
-	t_infinite_string	*line;
+	t_infinite_tab		*line;
 	char				*return_line;
 	t_char_file			*c;
 	enum e_error		err;
+	t_file				*file;
 	int					is_bad_backpack;
+
 }	t_backpack;
 
-char				*get_next_line(int fd);
-t_file				*get_file(int fd);
-t_char_file			*get_next_char(t_file *file);
-t_infinite_string	*init_infinite_string(void);
-void				*ft_memcpy(void *dest, const void *src, size_t n);
-enum e_error		append_char(t_infinite_string *str, char c);
+char			*get_next_line(int fd);
+t_char_file		*get_next_char(t_file *file);
+t_infinite_tab	*init_infinite_tab(unsigned int elem_size);
+void			*ft_memcpy(void *dest, const void *src, size_t n);
+enum e_error	append_elem(t_infinite_tab *tab, void *elem);
+t_backpack		get_backpack(t_infinite_tab *files, int fd);
+t_file			*get_file(t_infinite_tab *files, int fd);
 
 #endif
