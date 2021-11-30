@@ -6,11 +6,11 @@
 /*   By: jmaia <jmaia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 12:01:52 by jmaia             #+#    #+#             */
-/*   Updated: 2021/11/30 12:21:23 by jmaia            ###   ########.fr       */
+/*   Updated: 2021/11/30 16:49:18 by jmaia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line_bonus.h"
+#include "get_next_line.h"
 
 static char	*ft_strdup_or_null_if_empty(char *s)
 {

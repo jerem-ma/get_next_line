@@ -6,11 +6,11 @@
 /*   By: jmaia <jmaia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 12:54:08 by jmaia             #+#    #+#             */
-/*   Updated: 2021/11/30 12:25:34 by jmaia            ###   ########.fr       */
+/*   Updated: 2021/11/30 16:49:25 by jmaia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line_bonus.h"
+#include "get_next_line.h"
 
 t_char_file	*get_next_char(t_file	*file)
 {
