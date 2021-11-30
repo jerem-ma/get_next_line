@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_bonus.h                              :+:      :+:    :+:   */
+/*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jmaia <jmaia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 11:57:54 by jmaia             #+#    #+#             */
-/*   Updated: 2021/11/30 10:55:05 by jmaia            ###   ########.fr       */
+/*   Updated: 2021/11/30 12:20:42 by jmaia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_BONUS_H
-# define GET_NEXT_LINE_BONUS_H
+#ifndef GET_NEXT_LINE_H
+# define GET_NEXT_LINE_H
 # include <unistd.h>
 # include <stdlib.h>
 # define DEFAULT_INF_STR_SIZE 50
@@ -22,7 +22,7 @@ typedef struct s_file
 {
 	int				fd;
 	unsigned int	i;
-	char			buffer[BUFFER_SIZE];
+	char			*buffer;
 	ssize_t			real_size;
 	int				is_end;
 }	t_file;

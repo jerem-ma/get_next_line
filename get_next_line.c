@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jmaia <jmaia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 12:01:52 by jmaia             #+#    #+#             */
-/*   Updated: 2021/11/30 10:54:30 by jmaia            ###   ########.fr       */
+/*   Updated: 2021/11/30 12:21:23 by jmaia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ static t_file	init_file(int fd)
 	file.fd = fd;
 	file.i = BUFFER_SIZE;
 	file.real_size = BUFFER_SIZE;
+	file.buffer = malloc(sizeof(*file.buffer) * BUFFER_SIZE);
 	file.is_end = 0;
 	return (file);
 }
