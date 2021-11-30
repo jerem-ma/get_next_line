@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
+/*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jmaia <jmaia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 12:54:08 by jmaia             #+#    #+#             */
-/*   Updated: 2021/11/30 10:54:52 by jmaia            ###   ########.fr       */
+/*   Updated: 2021/11/30 12:25:34 by jmaia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ t_char_file	*get_next_char(t_file	*file)
 		return (0);
 	if (file->is_end)
 	{
+		free(file->buffer);
+		file->buffer = 0;
 		c_file->is_end = 1;
 		return (c_file);
 	}
