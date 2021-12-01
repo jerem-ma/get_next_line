@@ -6,7 +6,7 @@
 /*   By: jmaia <jmaia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 12:01:52 by jmaia             #+#    #+#             */
-/*   Updated: 2021/11/30 16:49:18 by jmaia            ###   ########.fr       */
+/*   Updated: 2021/12/01 17:42:15 by jmaia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ static t_file	init_file(int fd)
 	file.fd = fd;
 	file.i = BUFFER_SIZE;
 	file.real_size = BUFFER_SIZE;
-	file.buffer = malloc(sizeof(*file.buffer) * BUFFER_SIZE);
 	file.is_end = 0;
 	return (file);
 }
