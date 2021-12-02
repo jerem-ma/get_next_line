@@ -6,13 +6,13 @@
 /*   By: jmaia <jmaia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 12:54:08 by jmaia             #+#    #+#             */
-/*   Updated: 2021/12/01 17:44:01 by jmaia            ###   ########.fr       */
+/*   Updated: 2021/12/02 10:38:59 by jmaia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
 
-t_char_file	*get_next_char(t_file	*file)
+t_char_file	*get_next_char(t_file	*file, t_infinite_tab *files)
 {
 	t_char_file	*c_file;
 
@@ -23,6 +23,7 @@ t_char_file	*get_next_char(t_file	*file)
 	{
 		file->fd = -1;
 		c_file->is_end = 1;
+		files->count--;
 		return (c_file);
 	}
 	if (file->i == file->real_size)
@@ -33,7 +34,7 @@ t_char_file	*get_next_char(t_file	*file)
 		else
 			file->i = 0;
 		free(c_file);
-		return (get_next_char(file));
+		return (get_next_char(file, files));
 	}
 	c_file->is_end = 0;
 	c_file->c = file->buffer[file->i++];

@@ -6,7 +6,7 @@
 /*   By: jmaia <jmaia@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 12:01:52 by jmaia             #+#    #+#             */
-/*   Updated: 2021/11/30 10:54:30 by jmaia            ###   ########.fr       */
+/*   Updated: 2021/12/02 10:40:28 by jmaia            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ t_file	*get_file(t_infinite_tab *files, int fd)
 		if (files->tab == 0)
 			return (0);
 		((t_file *) &files->tab[0])->fd = -2;
+		files->count = 0;
 	}
 	i = 0;
 	while (((t_file *) &files->tab[i * files->elem_size])->fd != -2)
@@ -70,15 +71,20 @@ t_file	*get_file(t_infinite_tab *files, int fd)
 		i++;
 	}
 	file = init_file(fd);
-	append_elem(files, &file);
+	append_elem(files, &file + 0 * files->count++);
 	((t_file *)(&files->tab[files->i * files->elem_size]))->fd = -2;
 	return ((t_file *) &files->tab[i * files->elem_size]);
 }
 
-static void	free_infinite_tab(t_infinite_tab *tab)
+static void	free_infinite_tab(t_infinite_tab *tab, t_infinite_tab *files)
 {
 	free(tab->tab);
 	free(tab);
+	if (files->count == 0)
+	{
+		free(files->tab);
+		files->tab = 0;
+	}
 }
 
 char	*get_next_line(int fd)
@@ -92,19 +98,19 @@ char	*get_next_line(int fd)
 	while (!backpack.c->is_end && backpack.c->c != '\n')
 	{
 		free(backpack.c);
-		backpack.c = get_next_char(backpack.file);
+		backpack.c = get_next_char(backpack.file, &files);
 		if (backpack.c->is_end)
 			continue ;
 		backpack.err = append_elem(backpack.line, &backpack.c->c);
 		if (backpack.err == e_err)
 		{
 			free(backpack.c);
-			free_infinite_tab(backpack.line);
+			free_infinite_tab(backpack.line, &files);
 			return (0);
 		}
 	}
 	free(backpack.c);
 	backpack.return_line = ft_strdup_or_null_if_empty(backpack.line->tab);
-	free_infinite_tab(backpack.line);
+	free_infinite_tab(backpack.line, &files);
 	return (backpack.return_line);
 }
